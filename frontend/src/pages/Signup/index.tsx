@@ -1,5 +1,5 @@
 import * as React from "react";
-
+import emailIcon from "@/assets/icons/mail.svg"
 interface ISignUpProps {}
 
 const SignUp: React.FunctionComponent<ISignUpProps> = (props) => {
@@ -16,7 +16,7 @@ const SignUp: React.FunctionComponent<ISignUpProps> = (props) => {
         </h2>
         <form className="mt-8">
             <div>
-                <img />
+                <img src={emailIcon}/>
             <input type="email" placeholder="email"/>
             </div>
             
