@@ -1,0 +1,26 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator zod {
+  provider = "zod-prisma-types"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Profile {
+  id        Int     @id @default(autoincrement())
+  ///@zod.string.email({ message: 'Invalid email address' })
+  email     String  @unique
+  name      String?
+  ///@zod.string.min(8,{ message: 'password must be more than 8 characters'})
+  password  String
+  photo_url String?
+  bio       String?
+}
