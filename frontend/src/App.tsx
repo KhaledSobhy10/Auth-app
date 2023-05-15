@@ -1,9 +1,10 @@
 import './App.css'
+import SignUp from './pages/Signup'
 
 function App() {
 
   return (
- <div className='text-gray-600 border'>Hello World !</div>
+ <SignUp/>
   )
 }
 
