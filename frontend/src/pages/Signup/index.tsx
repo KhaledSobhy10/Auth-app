@@ -11,7 +11,7 @@ interface ISignUpProps {}
 
 const schema = z.object({
   email: z.string().email("Invalid Email !"),
-  password: z.string().regex(new RegExp("^(?=.*[A-Z])(?=.*\d).{8,}$")),
+  password: z.string().regex(new RegExp(/^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/g)),
 });
 
 type FormData = z.infer<typeof schema>;
