@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useEffect } from "react";
 import emailIcon from "@/assets/icons/mail.svg";
 import lockIcon from "@/assets/icons/lock-closed.svg";
 import { Link } from "react-router-dom";
@@ -6,31 +6,69 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import * as z from "zod";
+import { useFetch } from "../../hooks/fetch";
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface ISignUpProps {}
+
+const regexPassword = new RegExp(/^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/g)
 
 const schema = z.object({
   email: z.string().email("Invalid Email !"),
-  password: z.string().regex(new RegExp(/^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/g)),
+  password: z.string().regex(regexPassword, "Weak Password !"),
 });
 
 type FormData = z.infer<typeof schema>;
 
-const SignUp: React.FunctionComponent<ISignUpProps> = (props) => {
+const SignUp: React.FunctionComponent<ISignUpProps> = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setError
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
 
+  const { state, makeRequest } = useFetch();
+
+
+  // console.log(state);
+
+  const registerProfile = (data: FormData) => {
+    makeRequest({ data, url: "http://localhost:3000/api/profile", method: "POST" })
+  }
+
   const onsubmit: SubmitHandler<FormData> = (data) => {
-    console.log("data", data);
+    registerProfile(data)
   };
+
+
+  useEffect(() => {
+    if (state?.data) {
+      console.log("data", state.data);
+
+      return;
+    }
+    if (state?.errorResponse) {
+      type name = "email" | "password";
+      const errors = [state.errorResponse.errors] as { key: name, message: string }[]
+      console.log("errors", errors);
+
+      errors.forEach(({ key, message }) => {
+        setError(key, { type: 'custom', message: message });
+      })
+      return;
+    }
+    if (state.errorMessage) {
+      console.log(state.errorMessage);
+      return;
+    }
+  }, [state])
+
   return (
     <main className="min-h-screen w-screen bg-white flex justify-center items-center">
-      <div className="border rounded-3xl px-12 py-10 m-1 border-borderColor max-w-[450px]">
+      <div className="border rounded-3xl sm:px-12 sm:py-10 px-6 py-5 m-1 border-borderColor sm:w-[450px] w-11/12">
         <div>
           <span className="font-semibold">devchallanges</span>
         </div>
@@ -76,7 +114,6 @@ const SignUp: React.FunctionComponent<ISignUpProps> = (props) => {
         <div className="mt-8 mx-auto text-sm text-center text-secondaryText">
           Adready a member?
           <Link to={"/login"} className="text-accent">
-            {" "}
             Login
           </Link>
         </div>
@@ -86,3 +123,5 @@ const SignUp: React.FunctionComponent<ISignUpProps> = (props) => {
 };
 
 export default SignUp;
+
+

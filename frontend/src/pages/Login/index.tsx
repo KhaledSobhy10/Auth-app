@@ -3,12 +3,13 @@ import emailIcon from "@/assets/icons/mail.svg"
 import lockIcon from "@/assets/icons/lock-closed.svg"
 import { Link } from "react-router-dom";
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface ILoginProps {}
 
 const Login: React.FunctionComponent<ILoginProps> = (props) => {
   return (
     <main className="min-h-screen w-screen bg-white flex justify-center items-center">
-      <div className="border rounded-3xl px-12 py-10 m-1 border-borderColor max-w-[450px]">
+      <div className="border rounded-3xl sm:px-12 sm:py-10 px-6 py-5 m-1 border-borderColor sm:w-[450px] w-11/12">
         <div >
           <span className="font-semibold">devchallanges</span>
         </div>
