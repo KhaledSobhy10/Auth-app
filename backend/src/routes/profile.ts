@@ -1,4 +1,4 @@
-import { Response, Request, Router } from "express";
+import { Router } from "express";
 import { getProfile, getProfiles, postProfile } from "../controllers/profile";
 
 const router = Router();

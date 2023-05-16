@@ -1,8 +1,9 @@
 import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import profileRouter from "./src/routes/profile";
-const app = express();
+import authRouter from "./src/routes/auth";
 
+const app = express();
 
 app.use((req, res, next) => {
   // Website you wish to allow to connect
@@ -26,6 +27,8 @@ app.use((req, res, next) => {
 app.use(bodyParser.json());
 
 app.use("/api/profile", profileRouter);
+app.use("/api/auth", authRouter);
+
 
 app.listen(3000, () => {
   console.log("running on 3000");

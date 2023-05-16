@@ -4,6 +4,7 @@ import { ProfileCreateInputSchema } from "../../prisma/generated/zod";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { Profile } from "@prisma/client";
 import { getKeysWithError } from "../util/zod-error-formater";
+import { generateToken } from "../util/token";
 
 export const postProfile = async (req: Request, res: Response) => {
   const data = { ...req.body };
@@ -16,8 +17,12 @@ export const postProfile = async (req: Request, res: Response) => {
     });
 
   try {
-    const result = await prismaDB.profile.create({ data });
-    res.json({ success: true, data: result });
+    const response = await prismaDB.profile.create({ data });
+    const token = await generateToken({ id: response.id });
+    res.json({
+      success: true,
+      data: { token },
+    });
   } catch (err) {
     if (err instanceof PrismaClientKnownRequestError && "P2002" === err.code) {
       res.json({
