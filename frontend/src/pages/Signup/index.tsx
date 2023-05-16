@@ -45,12 +45,11 @@ const SignUp: React.FunctionComponent<ISignUpProps> = () => {
 
 
   useEffect(() => {
-    if (state?.data) {
+    if (state.data) {
       console.log("data", state.data);
-
       return;
     }
-    if (state?.errorResponse) {
+    if (state.errorResponse) {
       type name = "email" | "password";
       const errors = [state.errorResponse.errors] as { key: name, message: string }[]
       console.log("errors", errors);
