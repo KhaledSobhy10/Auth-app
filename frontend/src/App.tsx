@@ -1,14 +1,16 @@
-import {  Route, Router, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import './App.css'
-import Login from './pages/Login'
-import SignUp from './pages/Signup'
+import Profile from './pages/Profile'
+import UserGuard from './Guards/UserGuard'
+import Auth from './pages/Auth'
 
 function App() {
 
   return (   
     <Routes>
-      <Route path='/login' element={<Login/>} />
-      <Route path='/register' element={<SignUp/>} />
+      <Route path='/' element={<UserGuard><Profile /></UserGuard>} />
+      <Route path='/login' element={<Auth isSignUp={false} />} />
+      <Route path='/register' element={<Auth isSignUp={true} />} />
     </Routes>
 
   )
