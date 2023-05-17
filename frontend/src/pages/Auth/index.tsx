@@ -11,6 +11,7 @@ import { useFetch } from "../../hooks/fetch";
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IAuthProps {
   isSignUp: boolean
+  reCheck: () => void
 }
 
 const regexPassword = new RegExp(/^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/g)
@@ -53,7 +54,7 @@ const Auth: React.FunctionComponent<IAuthProps> = (props: IAuthProps) => {
       const { success, errors, data } = state.response;
       if (success) {
         localStorage.setItem("user_token", data.token);
-        navigate("/")
+        props.reCheck();
         return;
       }
 
