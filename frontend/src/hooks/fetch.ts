@@ -17,7 +17,7 @@ export type FetchState = {
   response?: any;
 };
 
-export type RequestInfo = { url: string; method: string; data: unknown };
+export type RequestInfo = { url: string; method: string; data?: any };
 
 const reducer = (state: FetchState, action: FetchAction) => {
   switch (action.type) {
@@ -41,7 +41,7 @@ export const useFetch = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(requestInfo.data), // body data type must match "Content-Type" header
+        body: JSON.stringify(requestInfo?.data), // body data type must match "Content-Type" header
       });
       const responseData = await response.json();
       return dispatch({
