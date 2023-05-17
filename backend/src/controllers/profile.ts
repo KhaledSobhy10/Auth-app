@@ -2,8 +2,7 @@ import { Response, Request } from "express";
 import prismaDB from "../util/db";
 import { ProfileCreateInputSchema } from "../../prisma/generated/zod";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { Profile } from "@prisma/client";
-import { getKeysWithError } from "../util/zod-error-formater";
+import { getKeysWithError } from "../util/zodErrorFormater";
 import { generateToken } from "../util/token";
 
 export const postProfile = async (req: Request, res: Response) => {
