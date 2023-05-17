@@ -5,10 +5,7 @@ export enum FetchType {
   LOADED,
 }
 
-export type payloadType =
-  | { data: any }
-  | { errorResponse: any }
-  | { errorMessage: string };
+export type payloadType = { error: { message: string } } | { response: any };
 
 export type FetchAction = {
   type: FetchType;
@@ -17,12 +14,10 @@ export type FetchAction = {
 
 export type FetchState = {
   isLoading: boolean;
-  data?: any;
-  errorResponse?: any;
-  errorMessage?: string;
+  response?: any;
 };
 
-export type RequestInfo = { url: string; method: string; data: any };
+export type RequestInfo = { url: string; method: string; data: unknown };
 
 const reducer = (state: FetchState, action: FetchAction) => {
   switch (action.type) {
@@ -30,7 +25,7 @@ const reducer = (state: FetchState, action: FetchAction) => {
       if (!state.isLoading) return { isLoading: true };
       else return state;
     case FetchType.LOADED:
-      return { isLoading: false, ...action?.payload };
+      return { isLoading: false, response: action.payload };
     default:
       return state;
   }
@@ -49,20 +44,14 @@ export const useFetch = () => {
         body: JSON.stringify(requestInfo.data), // body data type must match "Content-Type" header
       });
       const responseData = await response.json();
-      if (responseData.success) {
-        return dispatch({
-          type: FetchType.LOADED,
-          payload: { data: responseData },
-        });
-      }
-      dispatch({
+      return dispatch({
         type: FetchType.LOADED,
-        payload: { errorResponse: responseData },
+        payload: responseData,
       });
     } catch (errors) {
-      dispatch({
+      return dispatch({
         type: FetchType.LOADED,
-        payload: { errorMessage: errors as string },
+        payload: { error: { message: errors as string } },
       });
     }
   }, []);
