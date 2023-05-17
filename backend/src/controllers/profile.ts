@@ -10,9 +10,10 @@ export const postProfile = async (req: Request, res: Response) => {
   const validate = ProfileCreateInputSchema.safeParse(data);
 
   if (!validate.success)
-    return res.json({
+    return res.status(400).json({
       success: false,
       errors: getKeysWithError(validate.error.issues),
+      message: "Incorrect form data !",
     });
 
   try {
@@ -24,11 +25,11 @@ export const postProfile = async (req: Request, res: Response) => {
     });
   } catch (err) {
     if (err instanceof PrismaClientKnownRequestError && "P2002" === err.code) {
-      res.json({
+      res.status(400).json({
         success: false,
-        errors: { key: "email", message: `email is already taken !!` },
+        errors: [{ key: "email", message: `email is already taken !!` }],
       });
-    } else res.json({ success: false, code: err });
+    } else res.status(500).json({ success: false, message: err });
   }
 };
 
@@ -37,7 +38,7 @@ export const getProfiles = async (req: Request, res: Response) => {
     const profiles = await prismaDB.profile.findMany();
     res.json({ success: true, data: { profiles }, count: profiles.length });
   } catch (error) {
-    res.json({ success: true, error });
+    res.json({ success: false, message: error });
   }
 };
 
@@ -50,6 +51,6 @@ export const getProfile = async (req: Request, res: Response) => {
     });
     res.json({ success: true, data: { profiles } });
   } catch (error) {
-    res.json({ success: true, error });
+    res.status(400).json({ success: false, message: error });
   }
 };
