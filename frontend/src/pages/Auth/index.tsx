@@ -4,9 +4,12 @@ import lockIcon from "@/assets/icons/lock-closed.svg";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import logo from "@/assets/icons/logo.svg";
+import { USER_TOKEN } from "../../constants/keys";
 
 import * as z from "zod";
 import { useFetch } from "../../hooks/fetch";
+const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IAuthProps {
@@ -34,12 +37,10 @@ const Auth: React.FunctionComponent<IAuthProps> = (props: IAuthProps) => {
   });
 
   const { state, makeRequest } = useFetch();
-  const navigate = useNavigate();
 
   // console.log(state);
 
   const registerProfile = (data: FormData) => {
-    const BASE_URL = "http://localhost:3000/api";
     const ROUTE = props.isSignUp ? "/profile" : "/auth/login"
     makeRequest({ data, url: `${BASE_URL}${ROUTE}`, method: "POST" })
   }
@@ -53,7 +54,7 @@ const Auth: React.FunctionComponent<IAuthProps> = (props: IAuthProps) => {
     if (state?.response) {
       const { success, errors, data } = state.response;
       if (success) {
-        localStorage.setItem("user_token", data.token);
+        localStorage.setItem(USER_TOKEN, data.token);
         props.reCheck();
         return;
       }
@@ -87,7 +88,7 @@ const Auth: React.FunctionComponent<IAuthProps> = (props: IAuthProps) => {
 
       <div className="border rounded-3xl sm:px-12 sm:py-10 px-6 py-5 m-1 border-borderColor sm:w-[450px] w-11/12">
         <div>
-          <span className="font-semibold">devchallanges</span>
+          <img src={logo} />
         </div>
         <h1 className="font-semibold text-primaryText text-lg mt-8">
           {props.isSignUp ? "Join thousands of learners from around the world" : "Login"}
@@ -126,7 +127,7 @@ const Auth: React.FunctionComponent<IAuthProps> = (props: IAuthProps) => {
             />
           </div>
           <button className="bg-accent rounded-xl text-white py-2">
-            Start coding now
+            {props.isSignUp ? "Start coding now" : "Login"}
           </button>
         </form>
         {props.isSignUp ? <div className="mt-8 mx-auto text-sm text-center text-secondaryText">
