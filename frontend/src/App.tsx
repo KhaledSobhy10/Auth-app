@@ -9,7 +9,8 @@ function App() {
   const { isLoggedIn, reCheck } = useAuth();
   return (   
     <Routes>
-      <Route path='/' element={<UserGuard isLoggedIn={isLoggedIn}><Profile /></UserGuard>} />
+
+      <Route path='/' element={<UserGuard isLoggedIn={isLoggedIn}><Profile /></UserGuard>} /> 
       <Route path='/login' element={isLoggedIn ? <Navigate to={"/"} /> : <Auth isSignUp={false} reCheck={reCheck} />} />
       <Route path='/register' element={isLoggedIn ? <Navigate to={"/"} /> : <Auth isSignUp={true} reCheck={reCheck} />} />
     </Routes>
