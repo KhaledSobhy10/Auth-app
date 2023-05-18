@@ -23,4 +23,6 @@ model Profile {
   password  String
   photo_url String?
   bio       String?
+  ///@zod.string.min(8,{ message: 'phone must be 11 numbers'})
+   phone    String?
 }

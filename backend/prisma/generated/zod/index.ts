@@ -10,7 +10,7 @@ import type { Prisma } from '@prisma/client';
 // ENUMS
 /////////////////////////////////////////
 
-export const ProfileScalarFieldEnumSchema = z.enum(['id','email','name','password','photo_url','bio']);
+export const ProfileScalarFieldEnumSchema = z.enum(['id','email','name','password','photo_url','bio','phone']);
 
 export const SortOrderSchema = z.enum(['asc','desc']);
 
@@ -30,6 +30,7 @@ export const ProfileSchema = z.object({
   password: z.string().min(8,{ message: 'password must be more than 8 characters'}),
   photo_url: z.string().nullable(),
   bio: z.string().nullable(),
+  phone: z.string().min(8,{ message: 'phone must be 11 numbers'}).nullable(),
 })
 
 export type Profile = z.infer<typeof ProfileSchema>
@@ -48,6 +49,7 @@ export const ProfileSelectSchema: z.ZodType<Prisma.ProfileSelect> = z.object({
   password: z.boolean().optional(),
   photo_url: z.boolean().optional(),
   bio: z.boolean().optional(),
+  phone: z.boolean().optional(),
 }).strict()
 
 
@@ -65,6 +67,7 @@ export const ProfileWhereInputSchema: z.ZodType<Prisma.ProfileWhereInput> = z.ob
   password: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   photo_url: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   bio: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  phone: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
 }).strict();
 
 export const ProfileOrderByWithRelationInputSchema: z.ZodType<Prisma.ProfileOrderByWithRelationInput> = z.object({
@@ -73,7 +76,8 @@ export const ProfileOrderByWithRelationInputSchema: z.ZodType<Prisma.ProfileOrde
   name: z.lazy(() => SortOrderSchema).optional(),
   password: z.lazy(() => SortOrderSchema).optional(),
   photo_url: z.lazy(() => SortOrderSchema).optional(),
-  bio: z.lazy(() => SortOrderSchema).optional()
+  bio: z.lazy(() => SortOrderSchema).optional(),
+  phone: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const ProfileWhereUniqueInputSchema: z.ZodType<Prisma.ProfileWhereUniqueInput> = z.object({
@@ -88,6 +92,7 @@ export const ProfileOrderByWithAggregationInputSchema: z.ZodType<Prisma.ProfileO
   password: z.lazy(() => SortOrderSchema).optional(),
   photo_url: z.lazy(() => SortOrderSchema).optional(),
   bio: z.lazy(() => SortOrderSchema).optional(),
+  phone: z.lazy(() => SortOrderSchema).optional(),
   _count: z.lazy(() => ProfileCountOrderByAggregateInputSchema).optional(),
   _avg: z.lazy(() => ProfileAvgOrderByAggregateInputSchema).optional(),
   _max: z.lazy(() => ProfileMaxOrderByAggregateInputSchema).optional(),
@@ -105,6 +110,7 @@ export const ProfileScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.Profi
   password: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   photo_url: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
   bio: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
+  phone: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
 }).strict();
 
 export const ProfileCreateInputSchema: z.ZodType<Prisma.ProfileCreateInput> = z.object({
@@ -112,7 +118,8 @@ export const ProfileCreateInputSchema: z.ZodType<Prisma.ProfileCreateInput> = z.
   name: z.string().optional().nullable(),
   password: z.string().min(8,{ message: 'password must be more than 8 characters'}),
   photo_url: z.string().optional().nullable(),
-  bio: z.string().optional().nullable()
+  bio: z.string().optional().nullable(),
+  phone: z.string().min(8,{ message: 'phone must be 11 numbers'}).optional().nullable()
 }).strict();
 
 export const ProfileUncheckedCreateInputSchema: z.ZodType<Prisma.ProfileUncheckedCreateInput> = z.object({
@@ -121,7 +128,8 @@ export const ProfileUncheckedCreateInputSchema: z.ZodType<Prisma.ProfileUnchecke
   name: z.string().optional().nullable(),
   password: z.string().min(8,{ message: 'password must be more than 8 characters'}),
   photo_url: z.string().optional().nullable(),
-  bio: z.string().optional().nullable()
+  bio: z.string().optional().nullable(),
+  phone: z.string().min(8,{ message: 'phone must be 11 numbers'}).optional().nullable()
 }).strict();
 
 export const ProfileUpdateInputSchema: z.ZodType<Prisma.ProfileUpdateInput> = z.object({
@@ -130,6 +138,7 @@ export const ProfileUpdateInputSchema: z.ZodType<Prisma.ProfileUpdateInput> = z.
   password: z.union([ z.string().min(8,{ message: 'password must be more than 8 characters'}),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   photo_url: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   bio: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  phone: z.union([ z.string().min(8,{ message: 'phone must be 11 numbers'}),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const ProfileUncheckedUpdateInputSchema: z.ZodType<Prisma.ProfileUncheckedUpdateInput> = z.object({
@@ -139,6 +148,7 @@ export const ProfileUncheckedUpdateInputSchema: z.ZodType<Prisma.ProfileUnchecke
   password: z.union([ z.string().min(8,{ message: 'password must be more than 8 characters'}),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   photo_url: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   bio: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  phone: z.union([ z.string().min(8,{ message: 'phone must be 11 numbers'}),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const ProfileCreateManyInputSchema: z.ZodType<Prisma.ProfileCreateManyInput> = z.object({
@@ -147,7 +157,8 @@ export const ProfileCreateManyInputSchema: z.ZodType<Prisma.ProfileCreateManyInp
   name: z.string().optional().nullable(),
   password: z.string().min(8,{ message: 'password must be more than 8 characters'}),
   photo_url: z.string().optional().nullable(),
-  bio: z.string().optional().nullable()
+  bio: z.string().optional().nullable(),
+  phone: z.string().min(8,{ message: 'phone must be 11 numbers'}).optional().nullable()
 }).strict();
 
 export const ProfileUpdateManyMutationInputSchema: z.ZodType<Prisma.ProfileUpdateManyMutationInput> = z.object({
@@ -156,6 +167,7 @@ export const ProfileUpdateManyMutationInputSchema: z.ZodType<Prisma.ProfileUpdat
   password: z.union([ z.string().min(8,{ message: 'password must be more than 8 characters'}),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   photo_url: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   bio: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  phone: z.union([ z.string().min(8,{ message: 'phone must be 11 numbers'}),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const ProfileUncheckedUpdateManyInputSchema: z.ZodType<Prisma.ProfileUncheckedUpdateManyInput> = z.object({
@@ -165,6 +177,7 @@ export const ProfileUncheckedUpdateManyInputSchema: z.ZodType<Prisma.ProfileUnch
   password: z.union([ z.string().min(8,{ message: 'password must be more than 8 characters'}),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   photo_url: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   bio: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  phone: z.union([ z.string().min(8,{ message: 'phone must be 11 numbers'}),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const IntFilterSchema: z.ZodType<Prisma.IntFilter> = z.object({
@@ -212,7 +225,8 @@ export const ProfileCountOrderByAggregateInputSchema: z.ZodType<Prisma.ProfileCo
   name: z.lazy(() => SortOrderSchema).optional(),
   password: z.lazy(() => SortOrderSchema).optional(),
   photo_url: z.lazy(() => SortOrderSchema).optional(),
-  bio: z.lazy(() => SortOrderSchema).optional()
+  bio: z.lazy(() => SortOrderSchema).optional(),
+  phone: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const ProfileAvgOrderByAggregateInputSchema: z.ZodType<Prisma.ProfileAvgOrderByAggregateInput> = z.object({
@@ -225,7 +239,8 @@ export const ProfileMaxOrderByAggregateInputSchema: z.ZodType<Prisma.ProfileMaxO
   name: z.lazy(() => SortOrderSchema).optional(),
   password: z.lazy(() => SortOrderSchema).optional(),
   photo_url: z.lazy(() => SortOrderSchema).optional(),
-  bio: z.lazy(() => SortOrderSchema).optional()
+  bio: z.lazy(() => SortOrderSchema).optional(),
+  phone: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const ProfileMinOrderByAggregateInputSchema: z.ZodType<Prisma.ProfileMinOrderByAggregateInput> = z.object({
@@ -234,7 +249,8 @@ export const ProfileMinOrderByAggregateInputSchema: z.ZodType<Prisma.ProfileMinO
   name: z.lazy(() => SortOrderSchema).optional(),
   password: z.lazy(() => SortOrderSchema).optional(),
   photo_url: z.lazy(() => SortOrderSchema).optional(),
-  bio: z.lazy(() => SortOrderSchema).optional()
+  bio: z.lazy(() => SortOrderSchema).optional(),
+  phone: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const ProfileSumOrderByAggregateInputSchema: z.ZodType<Prisma.ProfileSumOrderByAggregateInput> = z.object({
