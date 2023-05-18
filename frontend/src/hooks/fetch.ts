@@ -1,4 +1,5 @@
 import { useCallback, useReducer } from "react";
+import { USER_TOKEN } from "../constants/keys";
 
 export enum FetchType {
   LOAD,
@@ -40,6 +41,7 @@ export const useFetch = () => {
         method: requestInfo.method, // *GET, POST, PUT, DELETE, etc.
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem(USER_TOKEN)}`,
         },
         body: JSON.stringify(requestInfo?.data), // body data type must match "Content-Type" header
       });
