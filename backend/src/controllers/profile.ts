@@ -46,10 +46,10 @@ export const getProfile = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
-    const profiles = await prismaDB.profile.findUnique({
+    const profile = await prismaDB.profile.findUnique({
       where: { id: Number.parseInt(id) },
     });
-    res.json({ success: true, data: { profiles } });
+    res.json({ success: true, data: { profile } });
   } catch (error) {
     res.status(400).json({ success: false, message: error });
   }
