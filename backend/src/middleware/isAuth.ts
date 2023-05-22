@@ -5,7 +5,7 @@ import { JwtPayload } from "jsonwebtoken";
 export const isAuth = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.get("Authorization");
   if (!authHeader)
-    return res.json({
+    return res.status(400).json({
       success: false,
       message: "Authorization header is required !",
     });
