@@ -21,9 +21,7 @@ export const postLogin = async (req: Request, res: Response) => {
       success: false,
       message: "Incorrect Email or password !!",
     });
-  } catch (error) {
-    console.log("Server Error "+error);
-    
+  } catch (error) {    
     return res.status(500).json({
       success: false,
       message: `Server Error`,
