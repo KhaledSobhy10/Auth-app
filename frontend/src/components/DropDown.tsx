@@ -3,6 +3,7 @@ import personIcon from "../assets/icons/person-circle.svg"
 import groupIcon from "../assets/icons/people-circle.svg"
 import logoutIcon from "../assets/icons/log-out-outline.svg";
 import { Menu } from '@headlessui/react';
+import { Link } from "react-router-dom";
 
 interface IDropDownProps {
     userName: string
@@ -12,18 +13,18 @@ interface IDropDownProps {
 const DropDown: React.FunctionComponent<IDropDownProps> = (props) => {
     return <Menu>
         {({ open }) =>
-            <div className='relative'>
-                <Menu.Button className="flex items-center gap-2 text-sm">{props.userName}<img src={downIcon} className={`w-3 h-3  ${open && "rotate-180"} transition-transform`} /></Menu.Button>
+            <div className='relative  '>
+                <Menu.Button className="flex items-center gap-2 text-sm hover:opacity-80">{props.userName}<img src={downIcon} className={`w-3 h-3  ${open && "rotate-180"} transition-transform`} /></Menu.Button>
                 <Menu.Items className={`flex flex-col gap-2  p-3 bg-white border rounded-xl w-48 overflow-hidden absolute right-0 top-[200%] shadow`}>
                     <Menu.Item>
                         {({ active }) => (
-                            <a
+                            <Link
                                 className={`${active && 'bg-[#F2F2F2]'} rounded-lg px-3 py-2 flex gap-2 text-[#4F4F4F]`}
-                                href="#"
+                                to={"/"}
                             >
                                 <img src={personIcon} className="w-6" />
                                 My Profile
-                            </a>
+                            </Link>
                         )}
                     </Menu.Item>
                     <Menu.Item>
