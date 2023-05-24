@@ -9,6 +9,8 @@ import { USER_TOKEN } from "../../constants/keys";
 
 import * as z from "zod";
 import { useFetch } from "../../hooks/fetch";
+import { useMutation } from "@tanstack/react-query";
+import axiosInstance from "../../api/axios-instance";
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -35,14 +37,23 @@ const Auth: React.FunctionComponent<IAuthProps> = (props: IAuthProps) => {
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
+  const URL = props.isSignUp ? "/profile" : "/auth/login"
 
-  const { state, makeRequest } = useFetch();
-
+  // const { state, makeRequest } = useFetch();
+  const mutation = useMutation({
+    mutationFn: (data: any) => {
+      return axiosInstance.post(URL, {
+        data,
+      });
+    },
+  });
   // console.log(state);
 
+
+
   const registerProfile = (data: FormData) => {
-    const ROUTE = props.isSignUp ? "/profile" : "/auth/login"
-    makeRequest({ data, url: `${BASE_URL}${ROUTE}`, method: "POST" })
+    mutation.mutate(data);
+
   }
 
   const onsubmit: SubmitHandler<FormData> = (data) => {
@@ -50,24 +61,24 @@ const Auth: React.FunctionComponent<IAuthProps> = (props: IAuthProps) => {
   };
 
 
-  useEffect(() => {
-    if (state?.response) {
-      const { success, errors, data } = state.response;
-      if (success) {
-        localStorage.setItem(USER_TOKEN, data.token);
-        props.reCheck();
-        return;
-      }
+  // useEffect(() => {
+  //   if (state?.response) {
+  //     const { success, errors, data } = state.response;
+  //     if (success) {
+  //       localStorage.setItem(USER_TOKEN, data.token);
+  //       props.reCheck();
+  //       return;
+  //     }
 
-      if (errors) {
-        type name = "email" | "password";
-        const errorsKeysValue = errors as { key: name, message: string }[]
-        errorsKeysValue.forEach(({ key, message }) => {
-          setError(key, { type: 'custom', message: message });
-        })
-      }
-    }
-  }, [state?.response])
+  //     if (errors) {
+  //       type name = "email" | "password";
+  //       const errorsKeysValue = errors as { key: name, message: string }[]
+  //       errorsKeysValue.forEach(({ key, message }) => {
+  //         setError(key, { type: 'custom', message: message });
+  //       })
+  //     }
+  //   }
+  // }, [state?.response])
 
   return (
     <main className="min-h-screen w-screen bg-white flex justify-center items-center">

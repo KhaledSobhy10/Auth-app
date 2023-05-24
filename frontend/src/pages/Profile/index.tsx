@@ -1,5 +1,4 @@
 import { FunctionComponent, useEffect } from "react";
-import placeholder from "../../assets/react.svg";
 import Header from "../../components/Header";
 import { useFetch } from "../../hooks/fetch";
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
