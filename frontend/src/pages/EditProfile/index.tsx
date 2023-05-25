@@ -6,23 +6,64 @@ import cameraIcon from "../../assets/icons/photo-camera.svg";
 import backIcon from "../../assets/icons/chevron-back-outline.svg";
 
 import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { passwordRegex } from "../../util/common-regex";
+import axiosInstance from "../../api/axios-instance";
+import { useQuery } from "@tanstack/react-query";
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IEditProfileProps {}
 
 const EditProfile: FunctionComponent<IEditProfileProps> = (props) => {
+
+
+
+  const { isLoading, isError, data: responseData, error } = useQuery({
+    queryKey: ["/profile"],
+    queryFn: async () => {
+      try {
+        const response = await axiosInstance.get("/profile");
+        return response.data
+      } catch (error) {
+        throw Error("err")
+      }
+    },
+  })
+
+
+
+  const schema = z.object({
+    email: z.string().email("Invalid Email !"),
+    password: z.string().regex(passwordRegex, "Weak Password !"),
+    name: z.string().max(20),
+    bio: z.string().max(200),
+    phone: z.string().length(11).or(z.string().optional()),
+  });
+
+  type FormData = z.infer<typeof schema>;
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setError,
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+  });
+
   const { state, makeRequest } = useFetch();
-  console.log("🚀 ~ file: index.tsx:10 ~ state:", state);
   const navigate = useNavigate();
 
   useEffect(() => {
     console.log("🚀 ~ file: index.tsx:16 ~ useEffect ~ BASE_URL:", BASE_URL);
     const ROUTE = "/profile";
-    makeRequest({ url: `${BASE_URL}${ROUTE}`, method: "GET" });
+    makeRequest(url: `${BASE_URL}${ROUTE}`, method: "GET" });
   }, []);
 
-  if (state.isLoading)
+if (isLoading)
     return (
       <div
         className="fixed left-1/2 top-1/2 inline-block h-8 w-8 animate-spin rounded-full border-[3px] border-current border-t-transparent text-blue-600"
@@ -33,14 +74,14 @@ const EditProfile: FunctionComponent<IEditProfileProps> = (props) => {
       </div>
     );
 
+const onsubmit = (data: FormData) => {
+  console.log("🚀 ~ file: index.tsx:59 ~ onsubmit ~ data:", data)
+}
+
   return (
     <main className="max-w-screen flex min-h-screen  flex-col items-center">
-      <Header
-        userName={
-          state?.response?.data?.profile.name ||
-          state?.response?.data?.profile.email
-        }
-      />
+      <Header userName={responseData?.data.profile.name || responseData?.data.profile.email} />
+
 
       <div className="m-2 w-11/12 text-start sm:w-7/12">
         <button
@@ -60,14 +101,12 @@ const EditProfile: FunctionComponent<IEditProfileProps> = (props) => {
           </h4>
         </div>
         <div className="m-2 w-full items-center px-6 py-3 sm:px-11 sm:py-6">
-          <form className="flex flex-col gap-6" noValidate>
+          <form className="flex flex-col gap-6" noValidate onSubmit={handleSubmit(onsubmit)}> 
             {/* photo */}
             <label htmlFor="photo" className="flex items-center gap-8">
               <div className="relative inline-block w-fit ">
                 <div
-                  className="absolute flex h-full w-full items-center justify-center rounded bg-[#00000033]
-"
-                >
+                  className="absolute flex h-full w-full items-center justify-center rounded bg-[#00000033]">
                   <img
                     src={cameraIcon}
                     className="stoke-white w-5 bg-transparent "
@@ -88,10 +127,10 @@ const EditProfile: FunctionComponent<IEditProfileProps> = (props) => {
               </label>
               <input
                 type="text"
-                name="name"
                 id="name"
-                className="rounded-xl border border-borderColor p-3  text-primaryText outline-none"
+                className={`  ${errors?.name ? "border-pink-600 " : "border-borderColor "} rounded-xl border p-3  text-primaryText outline-none`}
                 placeholder="Enter your name..."
+                {...register("name")}
               />
             </div>
             {/* bio */}
@@ -100,9 +139,9 @@ const EditProfile: FunctionComponent<IEditProfileProps> = (props) => {
                 Bio
               </label>
               <textarea
-                name="bio"
+                {...register("bio")}
                 id="bio"
-                className="rounded-xl border border-borderColor p-3  text-primaryText outline-none"
+                className={`  ${errors?.bio ? "border-pink-600 " : "border-borderColor "} rounded-xl border p-3  text-primaryText outline-none`}
                 placeholder="Enter your bio..."
               />
             </div>
@@ -113,9 +152,9 @@ const EditProfile: FunctionComponent<IEditProfileProps> = (props) => {
               </label>
               <input
                 type="text"
-                name="phone"
+                {...register("phone")}
                 id="phone"
-                className="rounded-xl border border-borderColor p-3  text-primaryText outline-none"
+                className={`  ${errors?.phone ? "border-pink-600 " : "border-borderColor "} rounded-xl border p-3  text-primaryText outline-none`}
                 placeholder="Enter your phone..."
               />
             </div>
@@ -126,9 +165,9 @@ const EditProfile: FunctionComponent<IEditProfileProps> = (props) => {
               </label>
               <input
                 type="email"
-                name="email"
+                {...register("email")}
                 id="email"
-                className="rounded-xl border border-borderColor p-3  text-primaryText outline-none"
+                className={`  ${errors?.email ? "border-pink-600 " : "border-borderColor "} rounded-xl border p-3  text-primaryText outline-none`}
                 placeholder="Enter your email..."
               />
             </div>
@@ -139,14 +178,18 @@ const EditProfile: FunctionComponent<IEditProfileProps> = (props) => {
               </label>
               <input
                 type="text"
-                name="password"
+                {...register("password")}
                 id="password"
-                className="rounded-xl border border-borderColor p-3  text-primaryText outline-none"
+                className={`  ${errors?.password ? "border-pink-600 " : "border-borderColor "} rounded-xl border p-3  text-primaryText outline-none`}
                 placeholder="Enter your password..."
               />
             </div>
-            <button className="px- w-fit rounded-lg bg-accent px-6 py-2 text-white">
+            <button className="flex justify-center items-center gap-4 px- w-fit rounded-lg bg-accent px-6 py-2 text-white">
               Save
+              {isLoading &&
+                <div className=" animate-spin inline-block w-4 h-4 border-[3px] border-current border-t-transparent text-white rounded-full" role="status" aria-label="loading">
+                  <span className="sr-only">Loading...</span>
+                </div>}
             </button>
           </form>
         </div>

@@ -1,17 +1,17 @@
-import { useEffect } from "react";
 import emailIcon from "@/assets/icons/mail.svg";
 import lockIcon from "@/assets/icons/lock-closed.svg";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import logo from "@/assets/icons/logo.svg";
-import { USER_TOKEN } from "../../constants/keys";
 
 import * as z from "zod";
-import { useFetch } from "../../hooks/fetch";
 import { useMutation } from "@tanstack/react-query";
 import axiosInstance from "../../api/axios-instance";
-const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+import axios from "axios";
+import { toast } from "react-hot-toast";
+import { USER_TOKEN } from "../../constants/keys";
+import { passwordRegex } from "../../util/common-regex";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IAuthProps {
@@ -19,11 +19,10 @@ interface IAuthProps {
   reCheck: () => void
 }
 
-const regexPassword = new RegExp(/^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/g)
 
 const schema = z.object({
   email: z.string().email("Invalid Email !"),
-  password: z.string().regex(regexPassword, "Weak Password !"),
+  password: z.string().regex(passwordRegex, "Weak Password !"),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -38,22 +37,41 @@ const Auth: React.FunctionComponent<IAuthProps> = (props: IAuthProps) => {
     resolver: zodResolver(schema),
   });
   const URL = props.isSignUp ? "/profile" : "/auth/login"
-
-  // const { state, makeRequest } = useFetch();
+  const notifyError = (message: string) => toast.error(message, { id: "error-toast" });
+  const navigate = useNavigate();
   const mutation = useMutation({
-    mutationFn: (data: any) => {
-      return axiosInstance.post(URL, {
-        data,
-      });
+    mutationFn: (data: FormData) => {
+      return axiosInstance.post(URL,
+        data
+      );
+    }
+    , onError(error, variables, context) {
+
+      if (axios.isAxiosError(error)) {
+        if (error.response?.data.errors) {
+          const errors = error.response?.data.errors as { key: "email" | "password", message: string }[];
+          errors.forEach(error => {
+            setError(error.key, { type: 'custom', message: error.message });
+          });
+        } else
+          notifyError(error.response?.data.message || "Error");
+      }
+      else
+        notifyError("Error !!");
+
+    },
+    onSuccess(response, variables, context) {
+      if (response.data && response.data.success) {
+        if (response.data.data.token) {
+          localStorage.setItem(USER_TOKEN, response.data.data.token)
+          props.reCheck()
+        }
+      }
     },
   });
-  // console.log(state);
-
-
 
   const registerProfile = (data: FormData) => {
     mutation.mutate(data);
-
   }
 
   const onsubmit: SubmitHandler<FormData> = (data) => {
@@ -61,42 +79,8 @@ const Auth: React.FunctionComponent<IAuthProps> = (props: IAuthProps) => {
   };
 
 
-  // useEffect(() => {
-  //   if (state?.response) {
-  //     const { success, errors, data } = state.response;
-  //     if (success) {
-  //       localStorage.setItem(USER_TOKEN, data.token);
-  //       props.reCheck();
-  //       return;
-  //     }
-
-  //     if (errors) {
-  //       type name = "email" | "password";
-  //       const errorsKeysValue = errors as { key: name, message: string }[]
-  //       errorsKeysValue.forEach(({ key, message }) => {
-  //         setError(key, { type: 'custom', message: message });
-  //       })
-  //     }
-  //   }
-  // }, [state?.response])
-
   return (
     <main className="min-h-screen w-screen bg-white flex justify-center items-center">
-      {state?.response?.message && <div className="absolute z-50 top-2 max-w-xs bg-white border rounded-md shadow-lg" role="alert">
-        <div className="flex p-4">
-          <div className="flex-shrink-0">
-            <svg className="h-4 w-4 text-red-500 mt-0.5" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
-            </svg>
-          </div>
-          <div className="ml-3">
-            <p className="text-sm text-gray-700 ">
-              {state?.response?.message}
-            </p>
-          </div>
-        </div>
-      </div>}
-
       <div className="border rounded-3xl sm:px-12 sm:py-10 px-6 py-5 m-1 border-borderColor sm:w-[450px] w-11/12">
         <div>
           <img src={logo} />
@@ -137,8 +121,12 @@ const Auth: React.FunctionComponent<IAuthProps> = (props: IAuthProps) => {
               {...register("password")}
             />
           </div>
-          <button className="bg-accent rounded-xl text-white py-2">
+          <button className="flex items-center justify-center gap-4 bg-accent rounded-xl text-white py-2 disabled:opacity-50" disabled={mutation.isLoading}>
             {props.isSignUp ? "Start coding now" : "Login"}
+            {mutation.isLoading &&
+              <div className=" animate-spin inline-block w-4 h-4 border-[3px] border-current border-t-transparent text-white rounded-full" role="status" aria-label="loading">
+                <span className="sr-only">Loading...</span>
+              </div>}
           </button>
         </form>
         {props.isSignUp ? <div className="mt-8 mx-auto text-sm text-center text-secondaryText">

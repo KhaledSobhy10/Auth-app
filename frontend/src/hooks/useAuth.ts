@@ -5,7 +5,6 @@ import { useMutation } from "@tanstack/react-query";
 const url = "/auth/verify-token";
 export default function useAuth() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
-  // const { state, makeRequest } = useFetch();
   const mutation = useMutation({
     mutationFn: () => {
       return axiosInstance.post(url, {
@@ -19,7 +18,6 @@ export default function useAuth() {
   }, []);
 
   useEffect(() => {
-    console.log("🚀 ~ file: useAuth.ts:18 ~ useAuth ~ mutation:", mutation);
     if (mutation.isError) {
       setIsLoggedIn(false);
     } else if (mutation.isSuccess) {
