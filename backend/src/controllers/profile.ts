@@ -1,21 +1,9 @@
 import { Response, Request } from "express";
 import prismaDB from "../util/db";
-import { ProfileCreateInputSchema } from "../../prisma/generated/zod";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { getKeysWithError } from "../util/zodErrorFormater";
 import { generateToken } from "../util/token";
-
 export const postProfile = async (req: Request, res: Response) => {
   const data = { ...req.body };
-  const validate = ProfileCreateInputSchema.safeParse(data);
-
-  if (!validate.success)
-    return res.status(400).json({
-      success: false,
-      errors: getKeysWithError(validate.error.issues),
-      message: "Incorrect form data !",
-    });
-
   try {
     const response = await prismaDB.profile.create({ data });
     const token = await generateToken({ id: response.id });
@@ -46,11 +34,40 @@ export const getProfile = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
-    const profiles = await prismaDB.profile.findUnique({
+    const profile = await prismaDB.profile.findUnique({
       where: { id: Number.parseInt(id) },
     });
-    res.json({ success: true, data: { profiles } });
+    if(profile?.photo_url){
+      profile.photo_url =`${process.env.APP_URL}${profile.photo_url}`;
+    }
+    res.json({ success: true, data: { profile } });
   } catch (error) {
     res.status(400).json({ success: false, message: error });
+  }
+};
+
+export const putProfile = async (req: Request, res: Response) => {
+  // will be set buy our middleware
+  const { id } = req.params;
+  
+  if(req.file){
+    req.body.photo_url = req.file.path;
+  }
+
+  try {
+    delete req.body.id;
+    const result = await prismaDB.profile.update({
+      where: { id: Number.parseInt(id) },
+      data: { ...req.body },
+    });
+    res.json({ success: true, message: "Profile updated successfully" });
+  } catch (error) {
+     if (error instanceof PrismaClientKnownRequestError && "P2002" === error.code) {
+     return res.status(400).json({
+        success: false,
+        errors: [{ key: "email", message: `email is already taken !!` }],
+      });}
+    console.log("🚀 ~ file: profile.ts:59 ~ putProfile ~ error:", error);
+    res.status(400).json({ success: false, message: "Error" });
   }
 };

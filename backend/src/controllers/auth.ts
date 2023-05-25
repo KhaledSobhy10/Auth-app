@@ -21,10 +21,10 @@ export const postLogin = async (req: Request, res: Response) => {
       success: false,
       message: "Incorrect Email or password !!",
     });
-  } catch (error) {
+  } catch (error) {    
     return res.status(500).json({
       success: false,
-      message: `Server Error ${error}`,
+      message: `Server Error`,
     });
   }
 };

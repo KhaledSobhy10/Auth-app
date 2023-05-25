@@ -1,6 +1,7 @@
 import { FunctionComponent, useEffect } from "react";
 import Header from "../../components/Header";
 import { useFetch } from "../../hooks/fetch";
+import { Link } from "react-router-dom";
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -24,7 +25,7 @@ const Profile: FunctionComponent<IProfileProps> = (props) => {
         </div>
 
     return (
-        <main className="w-screen min-h-screen flex justify-center items-center flex-col">
+        <main className="w-screen min-h-screen flex  items-center flex-col">
             <Header userName={state?.response?.data?.profile.name || state?.response?.data?.profile.email} />
             <div className="text-center mb-8">
                 <h1 className="text-3xl mb-2">Personal info</h1>
@@ -36,9 +37,9 @@ const Profile: FunctionComponent<IProfileProps> = (props) => {
                 <div className="grid grid-cols-2 grid-rows-2 sm:py-6 sm:px-11 px-6 py-3 m-2">
                     <h3 className="font-normal text-2xl">Profile</h3>
                     <div className="col-span-1 row-span-2 flex justify-end items-center">
-                        <button className="border border-borderColor rounded-xl py-2 px-8  w-fit h-fit">
+                        <Link className=" hover:opacity-80 border border-borderColor rounded-xl py-2 px-8  w-fit h-fit" to={"/edit-profile"}>
                             Edit
-                        </button>
+                        </Link>
                     </div>
                     <h4 className="text-xs font-medium text-[#828282]">
                         Some info may be visible to other people
