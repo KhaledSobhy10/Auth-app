@@ -17,11 +17,11 @@ export const postLogin = async (req: Request, res: Response) => {
         data: { token },
       });
     }
-    return res.status(400).json({
+    return res.status(401).json({
       success: false,
       message: "Incorrect Email or password !!",
     });
-  } catch (error) {    
+  } catch (error) {
     return res.status(500).json({
       success: false,
       message: `Server Error`,
@@ -49,7 +49,7 @@ export const validateLoginInput = (
 export const postVerifyToken = async (req: Request, res: Response) => {
   const { token } = req.body;
   if (!token) {
-    res.status(400).json({ success: false, message: "Token is required !" });
+    res.status(401).json({ success: false, message: "Token is required !" });
     return;
   }
   verifyToken(token)
@@ -58,6 +58,6 @@ export const postVerifyToken = async (req: Request, res: Response) => {
       res.status(200).json({ success: true, message: "Valid token !" });
     })
     .catch((error) => {
-      res.status(400).json({ success: false, message: error.message });
+      res.status(401).json({ success: false, message: error.message });
     });
 };
