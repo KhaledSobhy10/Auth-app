@@ -12,9 +12,9 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { USER_TOKEN } from "../../constants/keys";
 import { passwordRegex } from "../../util/common-regex";
+import { FormError } from "../../Types/errors";
 
-interface IAuthProps {
-  isSignUp: boolean;
+interface ISignUpProps {
   reCheck: () => void;
 }
 
@@ -25,7 +25,7 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-const Auth: React.FunctionComponent<IAuthProps> = (props: IAuthProps) => {
+const SignUp: React.FunctionComponent<ISignUpProps> = (props: ISignUpProps) => {
   const {
     register,
     handleSubmit,
@@ -34,33 +34,52 @@ const Auth: React.FunctionComponent<IAuthProps> = (props: IAuthProps) => {
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
-  const URL = props.isSignUp ? "/profile" : "/auth/login";
+  const URL = "/profile";
   const notifyError = (message: string) =>
     toast.error(message, { id: "error-toast" });
   const navigate = useNavigate();
   const mutation = useMutation({
-    mutationFn: (data: FormData) => {
-      return axiosInstance.post(URL, data);
+    mutationFn: async (data: FormData) => {
+      try {
+        const res = await axiosInstance.post(URL, data);
+        return res.data;
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          if (error.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+            throw error.response.data;
+          } else if (error.request) {
+            // The request was made but no response was received
+            console.log(error.request);
+            throw error;
+          } else {
+            // Something happened in setting up the request that triggered an Error
+            console.log("Error", error.message);
+            throw error.message;
+          }
+        }
+      }
     },
-    onError(error, variables, context) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.data.errors) {
-          const errors = error.response?.data.errors as {
-            key: "email" | "password";
-            message: string;
-          }[];
-          errors.forEach((error) => {
-            setError(error.key, { type: "custom", message: error.message });
-          });
-        } else notifyError(error.response?.data.message || "Error");
-      } else notifyError("Error !!");
+    onError(error: FormError, variables, context) {
+      notifyError(error.message || "Error !!");
+      if (error.errors) {
+        const errors = error.errors as {
+          key: "email" | "password";
+          message: string;
+        }[];
+        errors.forEach((error) => {
+          setError(error.key, { type: "custom", message: error.message });
+        });
+      }
     },
     onSuccess(response, variables, context) {
-      if (response.data && response.data.success) {
-        if (response.data.data.token) {
-          localStorage.setItem(USER_TOKEN, response.data.data.token);
+      if (response && response.success && response.data.token) {
+        localStorage.setItem(USER_TOKEN, response.data.token);
+        toast.success("Logged successfully");
+        setTimeout(() => {
           props.reCheck();
-        }
+        }, 1000);
       }
     },
   });
@@ -80,16 +99,12 @@ const Auth: React.FunctionComponent<IAuthProps> = (props: IAuthProps) => {
           <img src={logo} />
         </div>
         <h1 className="mt-8 text-lg font-semibold text-primaryText">
-          {props.isSignUp
-            ? "Join thousands of learners from around the world"
-            : "Login"}
+          Join thousands of learners from around the world
         </h1>
-        {props.isSignUp && (
-          <h2 className="font mt-3 text-primaryText">
-            Master web development by making real-life projects. There are
-            multiple paths for you to choose
-          </h2>
-        )}
+        <h2 className="font mt-3 text-primaryText">
+          Master web development by making real-life projects. There are
+          multiple paths for you to choose
+        </h2>
 
         <form
           className="mt-8 flex flex-col gap-7"
@@ -134,7 +149,7 @@ const Auth: React.FunctionComponent<IAuthProps> = (props: IAuthProps) => {
             className="flex items-center justify-center gap-4 rounded-xl bg-accent py-2 text-white disabled:opacity-50"
             disabled={mutation.isLoading}
           >
-            {props.isSignUp ? "Start coding now" : "Login"}
+            Start coding now
             {mutation.isLoading && (
               <div
                 className=" inline-block h-4 w-4 animate-spin rounded-full border-[3px] border-current border-t-transparent text-white"
@@ -146,24 +161,15 @@ const Auth: React.FunctionComponent<IAuthProps> = (props: IAuthProps) => {
             )}
           </button>
         </form>
-        {props.isSignUp ? (
-          <div className="mx-auto mt-8 text-center text-sm text-secondaryText">
-            Adready a member?
-            <Link to={"/login"} className="text-accent">
-              Login
-            </Link>
-          </div>
-        ) : (
-          <div className="mx-auto mt-8 text-center text-sm text-secondaryText">
-            Don’t have an account yet?{" "}
-            <Link to={"/register"} className="text-accent">
-              Register
-            </Link>
-          </div>
-        )}
+        <div className="mx-auto mt-8 text-center text-sm text-secondaryText">
+          Adready a member?
+          <Link to={"/login"} className="text-accent">
+            Login
+          </Link>
+        </div>
       </div>
     </main>
   );
 };
 
-export default Auth;
+export default SignUp;
