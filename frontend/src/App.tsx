@@ -1,23 +1,48 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
-import './App.css'
-import Profile from './pages/Profile'
-import UserGuard from './Guards/UserGuard'
-import Auth from './pages/Auth'
-import useAuth from './hooks/useAuth'
-import EditProfile from './pages/EditProfile'
+import { Navigate, Route, Routes } from "react-router-dom";
+import { useContext } from "react";
+import Profile from "./pages/Profile";
+import UserGuard from "./Guards/UserGuard";
+import EditProfile from "./pages/EditProfile";
+import { AuthContext } from "./context/AuthContext";
+import SignUp from "./pages/Signup";
+import Login from "./pages/login";
+import "./App.css";
+import { EDIT_PROFILE, HOME, LOGIN, REGISTER } from "./constants/routes";
 
 function App() {
-  const { isLoggedIn, reCheck } = useAuth();
-  return (   
+  const { isLoggedIn, reCheck } = useContext(AuthContext);
+  return (
     <Routes>
-      <Route path='/' element={<UserGuard isLoggedIn={isLoggedIn}><Profile /></UserGuard>} /> 
-      <Route path='/login' element={isLoggedIn ? <Navigate to={"/"} /> : <Auth isSignUp={false} reCheck={reCheck} />} />
-      <Route path='/register' element={isLoggedIn ? <Navigate to={"/"} /> : <Auth isSignUp={true} reCheck={reCheck} />} />
-      <Route path='/edit-profile' element={<UserGuard isLoggedIn={isLoggedIn}><EditProfile /></UserGuard>} /> 
-
+      <Route
+        path={HOME}
+        element={
+          <UserGuard isLoggedIn={isLoggedIn}>
+            <Profile />
+          </UserGuard>
+        }
+      />
+      <Route
+        path={LOGIN}
+        element={
+          isLoggedIn ? <Navigate to={HOME} /> : <Login reCheck={reCheck} />
+        }
+      />
+      <Route
+        path={REGISTER}
+        element={
+          isLoggedIn ? <Navigate to={HOME} /> : <SignUp reCheck={reCheck} />
+        }
+      />
+      <Route
+        path={EDIT_PROFILE}
+        element={
+          <UserGuard isLoggedIn={isLoggedIn}>
+            <EditProfile />
+          </UserGuard>
+        }
+      />
     </Routes>
-
-  )
+  );
 }
 
-export default App
+export default App;
