@@ -5,21 +5,23 @@ import {
   QueryClient,
   QueryClientProvider,
   useQuery,
-} from '@tanstack/react-query'
-
+} from "@tanstack/react-query";
 
 import App from "./App.tsx";
 import "./index.css";
 import { Toaster } from "react-hot-toast";
+import { AuthProvider } from "./context/AuthContext.tsx";
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <Toaster />
-        <App />
+        <AuthProvider>
+          <App />
+        </AuthProvider>
       </QueryClientProvider>
     </BrowserRouter>
   </React.StrictMode>
