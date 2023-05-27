@@ -2,6 +2,7 @@ import { Response, Request } from "express";
 import prismaDB from "../util/db";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { generateToken } from "../util/token";
+import path from "path";
 export const postProfile = async (req: Request, res: Response) => {
   const data = { ...req.body };
   try {
@@ -38,7 +39,8 @@ export const getProfile = async (req: Request, res: Response) => {
       where: { id: Number.parseInt(id) },
     });
     if(profile?.photo_url){
-      profile.photo_url =`${process.env.APP_URL}${profile.photo_url}`;
+     
+      profile.photo_url =  profile.photo_url.replace("public",process.env.APP_URL||"ErrorInFilePath");
     }
     res.json({ success: true, data: { profile } });
   } catch (error) {
