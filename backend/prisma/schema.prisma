@@ -20,7 +20,7 @@ model Profile {
   email     String  @unique
   name      String?
   ///@zod.string.min(8,{ message: 'password must be more than 8 characters'})
-  password  String
+  password  String?
   photo_url String?
   bio       String?
   ///@zod.string.min(8,{ message: 'phone must be 11 numbers'})
