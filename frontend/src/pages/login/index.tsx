@@ -16,7 +16,6 @@ import { REGISTER } from "../../constants/routes";
 import googleLogo from "../../assets/icons/logo-google.svg";
 import gitLogo from "../../assets/icons/logo-github.svg";
 import faceLogo from "../../assets/icons/logo-facebook.svg";
-
 interface ILoginProps {
   reCheck: () => void;
 }
@@ -29,6 +28,8 @@ const schema = z.object({
 export type LoginInputs = z.infer<typeof schema>;
 
 const Login: React.FunctionComponent<ILoginProps> = (props: ILoginProps) => {
+
+
   const {
     register,
     handleSubmit,
