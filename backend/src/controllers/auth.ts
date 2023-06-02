@@ -1,8 +1,6 @@
 import { Response, Request, NextFunction } from "express";
 import prismaDB from "../util/db";
-import { getKeysWithError } from "../util/zodErrorFormater";
 import { generateToken, verifyToken } from "../util/token";
-import { ProfileCreateInputSchema } from "../../prisma/generated/zod";
 
 export const postLogin = async (req: Request, res: Response) => {
   // Check if data is exist in DB
@@ -27,23 +25,6 @@ export const postLogin = async (req: Request, res: Response) => {
       message: `Server Error`,
     });
   }
-};
-
-export const validateLoginInput = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const data = { ...req.body };
-  // Check validation of inputs before check in DB
-  const validate = ProfileCreateInputSchema.safeParse(data);
-  if (!validate.success)
-    return res.status(400).json({
-      success: false,
-      errors: getKeysWithError(validate.error.issues),
-    });
-  req.body = validate.data;
-  next();
 };
 
 export const postVerifyToken = async (req: Request, res: Response) => {
