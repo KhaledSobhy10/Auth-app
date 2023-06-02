@@ -9,7 +9,7 @@ const schema = z.object({
     .string()
     .min(8, { message: "password must be more than 8 characters" }),
   photo_url: z.string().optional().nullable(),
-  bio: z.string().max(200).optional().nullable(),
+  bio: z.string().max(100).optional().nullable(),
   phone: z
     .string()
     .min(8, { message: "phone must be 11 numbers" })
