@@ -2,7 +2,7 @@ import { Response, Request } from "express";
 import prismaDB from "../util/db";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { generateToken } from "../util/token";
-import path from "path";
+
 export const postProfile = async (req: Request, res: Response) => {
   const data = { ...req.body };
   try {
@@ -38,9 +38,11 @@ export const getProfile = async (req: Request, res: Response) => {
     const profile = await prismaDB.profile.findUnique({
       where: { id: Number.parseInt(id) },
     });
-    if(profile?.photo_url){
-     
-      profile.photo_url =  profile.photo_url.replace("public",process.env.APP_URL||"ErrorInFilePath");
+    if (profile?.photo_url) {
+      profile.photo_url = profile.photo_url.replace(
+        "public",
+        process.env.APP_URL || "ErrorInFilePath"
+      );
     }
     res.json({ success: true, data: { profile } });
   } catch (error) {
@@ -51,8 +53,8 @@ export const getProfile = async (req: Request, res: Response) => {
 export const putProfile = async (req: Request, res: Response) => {
   // will be set buy our middleware
   const { id } = req.params;
-  
-  if(req.file){
+
+  if (req.file) {
     req.body.photo_url = req.file.path;
   }
 
@@ -64,11 +66,15 @@ export const putProfile = async (req: Request, res: Response) => {
     });
     res.json({ success: true, message: "Profile updated successfully" });
   } catch (error) {
-     if (error instanceof PrismaClientKnownRequestError && "P2002" === error.code) {
-     return res.status(400).json({
+    if (
+      error instanceof PrismaClientKnownRequestError &&
+      "P2002" === error.code
+    ) {
+      return res.status(400).json({
         success: false,
         errors: [{ key: "email", message: `email is already taken !!` }],
-      });}
+      });
+    }
     console.log("🚀 ~ file: profile.ts:59 ~ putProfile ~ error:", error);
     res.status(400).json({ success: false, message: "Error" });
   }
