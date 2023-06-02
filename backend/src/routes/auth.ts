@@ -1,15 +1,12 @@
-import { Router, query } from "express";
-import {
-  postLogin,
-  postVerifyToken,
-  validateLoginInput,
-} from "../controllers/auth";
+import { Router } from "express";
+import { postLogin, postVerifyToken } from "../controllers/auth";
 
 import axios from "axios";
+import { isValidateLoginInput } from "../middleware/isValidLoginInput";
 
 const router = Router();
 
-router.post("/login", [validateLoginInput], postLogin);
+router.post("/login", [isValidateLoginInput], postLogin);
 
 router.post("/verify-token", postVerifyToken);
 
