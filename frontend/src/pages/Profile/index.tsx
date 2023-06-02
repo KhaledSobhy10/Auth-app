@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useEffect } from "react";
 import Header from "../../components/Header";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -6,6 +6,8 @@ import axiosInstance from "../../api/axios-instance";
 import { getAuthHeader } from "../../api/headers";
 import { errorFormat } from "../../api/axios-helpers";
 import axios from "axios";
+import { FormError } from "../../Types/errors";
+import { toast } from "react-hot-toast";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IProfileProps {}
@@ -13,7 +15,11 @@ interface IProfileProps {}
 const ROUTE = "/profile";
 
 const Profile: FunctionComponent<IProfileProps> = (props) => {
-  const { isLoading, data: responseData } = useQuery({
+  const {
+    isLoading,
+    data: responseData,
+    error,
+  } = useQuery({
     queryKey: [ROUTE],
     queryFn: async () => {
       try {
@@ -27,6 +33,14 @@ const Profile: FunctionComponent<IProfileProps> = (props) => {
       }
     },
   });
+
+  useEffect(() => {
+    if (error instanceof Error) {
+      toast.error(error.message);
+    } else {
+      // toast.error(error a);
+    }
+  }, [error]);
 
   if (isLoading)
     return (

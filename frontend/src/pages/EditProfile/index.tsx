@@ -14,6 +14,9 @@ import { useProfile } from "../../hooks/useProfile";
 import { useMutation } from "@tanstack/react-query";
 import axiosInstance from "../../api/axios-instance";
 import { getFormDataHeader } from "../../api/headers";
+import axios, { isAxiosError } from "axios";
+import { errorFormat } from "../../api/axios-helpers";
+import { FormError } from "../../Types/errors";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IEditProfileProps {}
@@ -67,18 +70,41 @@ const EditProfile: FunctionComponent<IEditProfileProps> = (props) => {
   }, [responseData]);
 
   const mutation = useMutation({
-    mutationFn: (data: FormData) => {
-      return axiosInstance.put("/profile", data, {
-        headers: getFormDataHeader(),
-      });
+    mutationFn: async (formData: FormData) => {
+      try {
+        const response = await axiosInstance.put("/profile", formData, {
+          headers: getFormDataHeader(),
+        });
+        return response.data;
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          errorFormat(error);
+        } else {
+          throw error;
+        }
+      }
     },
     onSuccess(data, variables, context) {
       toast.success("Updated successfully");
     },
-    onError(error) {
-      if (error instanceof Error) toast.error(error.message);
-    },
   });
+
+  useEffect(() => {
+    if (mutation.error) {
+      const myError = mutation.error as FormError;
+
+      const errorMessage = myError.message || "Error !!";
+      toast.error(errorMessage, {
+        id: errorMessage,
+      });
+
+      if (myError.errors) {
+        for (const userError of myError.errors) {
+          setError(userError.key as any, { message: userError.message });
+        }
+      }
+    }
+  }, [mutation.error]);
 
   const navigate = useNavigate();
   const onsubmit = (data: FormInputs) => {
@@ -174,7 +200,11 @@ const EditProfile: FunctionComponent<IEditProfileProps> = (props) => {
                 placeholder="Enter your name..."
                 {...register("name")}
               />
+              <div className="text-sm text-pink-700">
+                {errors?.name?.message}
+              </div>
             </div>
+
             {/* bio */}
             <div className="flex w-11/12 flex-col gap-1 text-sm text-secondaryText  md:w-8/12">
               <label htmlFor="bio" className="">
@@ -188,6 +218,9 @@ const EditProfile: FunctionComponent<IEditProfileProps> = (props) => {
                 } rounded-xl border p-3  text-primaryText outline-none`}
                 placeholder="Enter your bio..."
               />
+              <div className="text-sm text-pink-700">
+                {errors?.bio?.message}
+              </div>
             </div>
             {/* phone */}
             <div className="flex w-11/12 flex-col gap-1 text-sm text-secondaryText  md:w-8/12">
@@ -203,6 +236,9 @@ const EditProfile: FunctionComponent<IEditProfileProps> = (props) => {
                 } rounded-xl border p-3  text-primaryText outline-none`}
                 placeholder="Enter your phone..."
               />
+              <div className="text-sm text-pink-700">
+                {errors?.phone?.message}
+              </div>
             </div>
             {/* email */}
             <div className="flex w-11/12 flex-col gap-1 text-sm text-secondaryText  md:w-8/12">
@@ -218,6 +254,9 @@ const EditProfile: FunctionComponent<IEditProfileProps> = (props) => {
                 } rounded-xl border p-3  text-primaryText outline-none`}
                 placeholder="Enter your email..."
               />
+              <div className="text-sm text-pink-700">
+                {errors?.email?.message}
+              </div>
             </div>
             {/* password */}
             <div className="flex w-11/12 flex-col gap-1 text-sm text-secondaryText  md:w-8/12">
@@ -233,6 +272,9 @@ const EditProfile: FunctionComponent<IEditProfileProps> = (props) => {
                 } rounded-xl border p-3  text-primaryText outline-none`}
                 placeholder="Enter your password..."
               />
+              <div className="text-sm text-pink-700">
+                {errors?.password?.message}
+              </div>
             </div>
             <button
               className="px- flex w-fit items-center justify-center gap-4 rounded-lg bg-accent px-6 py-2 text-white disabled:opacity-50"
