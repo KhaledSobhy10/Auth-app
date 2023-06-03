@@ -16,6 +16,7 @@ import { LOGIN } from "../../constants/routes";
 import googleLogo from "../../assets/icons/logo-google.svg";
 import gitLogo from "../../assets/icons/logo-github.svg";
 import faceLogo from "../../assets/icons/logo-facebook.svg";
+import SocialSection from "../../components/SocialSection";
 
 interface ISignUpProps {
   reCheck: () => void;
@@ -144,17 +145,7 @@ const SignUp: React.FunctionComponent<ISignUpProps> = (props: ISignUpProps) => {
         <p className="mt-4 text-center text-sm text-secondaryText">
           or continue with these social profile
         </p>
-        <div className="mt-4 flex w-full justify-evenly">
-          <button className="flex h-10 w-10 items-center justify-center rounded-full border border-borderColor hover:opacity-70 ">
-            <img src={googleLogo} className="w-5 fill-red-400 text-red-300" />
-          </button>
-          <button className="flex h-10 w-10 items-center justify-center rounded-full border border-borderColor hover:opacity-70  ">
-            <img src={gitLogo} className="w-5 fill-red-400 text-red-300" />
-          </button>
-          <button className="flex h-10 w-10 items-center justify-center rounded-full border border-borderColor hover:opacity-70  ">
-            <img src={faceLogo} className="w-5 fill-red-400 text-red-300" />
-          </button>
-        </div>
+        <SocialSection />
         <div className="mx-auto mt-8 text-center text-sm text-secondaryText">
           Adready a member?
           <Link to={LOGIN} className="text-accent">

@@ -1,6 +1,6 @@
 import emailIcon from "@/assets/icons/mail.svg";
 import lockIcon from "@/assets/icons/lock-closed.svg";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import logo from "@/assets/icons/logo.svg";
@@ -11,11 +11,10 @@ import { USER_TOKEN } from "../../constants/keys";
 import { passwordRegex } from "../../util/common-regex";
 import { FormError } from "../../Types/errors";
 import { useLogin } from "./useLogin";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { REGISTER } from "../../constants/routes";
-import googleLogo from "../../assets/icons/logo-google.svg";
-import gitLogo from "../../assets/icons/logo-github.svg";
-import faceLogo from "../../assets/icons/logo-facebook.svg";
+import { AuthContext } from "../../context/AuthContext";
+import SocialSection from "../../components/SocialSection";
 interface ILoginProps {
   reCheck: () => void;
 }
@@ -28,7 +27,21 @@ const schema = z.object({
 export type LoginInputs = z.infer<typeof schema>;
 
 const Login: React.FunctionComponent<ILoginProps> = (props: ILoginProps) => {
+  const location = useLocation();
+  const { reCheck } = useContext(AuthContext);
 
+  useEffect(() => {
+    if (location.search) {
+      const queryParams = new URLSearchParams(location.search);
+      const token = queryParams.get("token");
+      if (token) {
+        localStorage.setItem(USER_TOKEN, token);
+        setTimeout(() => {
+          reCheck();
+        }, 500);
+      }
+    }
+  }, [location]);
 
   const {
     register,
@@ -139,17 +152,7 @@ const Login: React.FunctionComponent<ILoginProps> = (props: ILoginProps) => {
         <p className="mt-4 text-center text-sm text-secondaryText">
           or continue with these social profile
         </p>
-        <div className="mt-4 flex w-full justify-evenly">
-          <button className="flex h-10 w-10 items-center justify-center rounded-full border border-borderColor hover:opacity-70 ">
-            <img src={googleLogo} className="w-5 fill-red-400 text-red-300" />
-          </button>
-          <button className="flex h-10 w-10 items-center justify-center rounded-full border border-borderColor hover:opacity-70  ">
-            <img src={gitLogo} className="w-5 fill-red-400 text-red-300" />
-          </button>
-          <button className="flex h-10 w-10 items-center justify-center rounded-full border border-borderColor hover:opacity-70  ">
-            <img src={faceLogo} className="w-5 fill-red-400 text-red-300" />
-          </button>
-        </div>
+        <SocialSection />
         <div className="mx-auto mt-8 text-center text-sm text-secondaryText">
           Don’t have an account yet?{" "}
           <Link to={REGISTER} className="text-accent">
